@@ -2,16 +2,15 @@
 import { computed } from 'vue';
 import { sum } from 'lodash';
 
-
 const props = withDefaults(defineProps<{
   headers: { id: number, label: string }[]
-  rows: { rowId: number, rowValue: { id: number, value: number }[] }[]
+  rows: { rowId: number, rowValue: { id: string, value: number }[] }[]
   applyRowTotal?: boolean
 }>(), {
   applyRowTotal: true
 });
 const emits = defineEmits<{
-  updateCell: [{ colId: number, rowId: number, newValue: number }]
+  updateCell: [{ cellId: string, rowId: number, newValue: number }]
 }>();
 
 // TODO: should split to each rows to avoid performance
@@ -25,9 +24,8 @@ function onCellUpdate (e: KeyboardEvent) {
   }
   (e.target as HTMLElement).blur()
 }
-function onCellEdit (newValue: number, colId: number, rowId: number) {
-  console.log(newValue)
-  emits('updateCell', { colId, rowId, newValue });
+function onCellEdit (newValue: number, cellId: string, rowId: number) {
+  emits('updateCell', { cellId, rowId, newValue });
 }
 </script>
 
@@ -41,7 +39,6 @@ function onCellEdit (newValue: number, colId: number, rowId: number) {
       >
         {{ header.label }}
       </th>
-      <th v-if="applyRowTotal">Total</th>
     </tr>
 
     <tr
@@ -58,7 +55,6 @@ function onCellEdit (newValue: number, colId: number, rowId: number) {
       >
           {{ cell.value }}
       </td>
-      <td class="font-bold">{{ columnTotalRow[index] }}</td>
     </tr>
   </table>
 </template>
